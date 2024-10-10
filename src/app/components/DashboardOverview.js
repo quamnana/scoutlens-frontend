@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import BarGraph from "./BarGraph";
 import PlayerMap from "./PlayerMap";
+import TopStats from "./TopStats";
 
 const dummyData = {
   totalPlayers: 500,
@@ -47,6 +48,26 @@ const dummyData = {
     { league: "Premier League", players: 180, teams: 20 },
     { league: "Serie A", players: 130, teams: 20 },
     { league: "Ligue 1", players: 100, teams: 18 },
+  ],
+  topGoalscorers: [
+    { name: "Lionel Messi", team: "Inter Miami", stats: 40 },
+    { name: "Cristiano Ronaldo", team: "Al Nassr", stats: 35 },
+    { name: "Erling Haaland", team: "Manchester City", stats: 33 },
+  ],
+  defensiveMonsters: [
+    { name: "Virgil van Dijk", team: "Liverpool", stats: 100 },
+    { name: "Ruben Dias", team: "Manchester City", stats: 95 },
+    { name: "Kalidou Koulibaly", team: "Al Hilal", stats: 93 },
+  ],
+  assistLeaders: [
+    { name: "Kevin De Bruyne", team: "Manchester City", stats: 20 },
+    { name: "Bruno Fernandes", team: "Manchester United", stats: 18 },
+    { name: "Lionel Messi", team: "Inter Miami", stats: 17 },
+  ],
+  saveMonsters: [
+    { name: "Thibaut Courtois", team: "Real Madrid", stats: 90 },
+    { name: "Alisson Becker", team: "Liverpool", stats: 88 },
+    { name: "Ederson Moraes", team: "Manchester City", stats: 85 },
   ],
 };
 
@@ -154,25 +175,26 @@ const DashboardOverview = () => {
           dataKeys={["players", "teams"]}
           colors={["#8884d8", "#82ca9d"]}
         />
-        {/* <Card title="Players" className="mt-4">
-          <Table
-            columns={columns}
-            dataSource={data.players}
-            pagination={{ pageSize: 5 }}
-          />
-        </Card> */}
         <Card title="Number of Players in Each Country" className="mt-4">
           <PlayerMap data={data.countriesData} />
         </Card>
       </div>
 
-      <Card title="Players" className="mt-4">
-        <Table
-          columns={columns}
-          dataSource={data.players}
-          pagination={{ pageSize: 5 }}
-        />
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <TopStats title="Top Goalscorers" data={data.topGoalscorers} />
+          <TopStats title="Defensive Monsters" data={data.defensiveMonsters} />
+          <TopStats title="Assist Leaders" data={data.assistLeaders} />
+          <TopStats title="Save Monsters" data={data.saveMonsters} />
+        </div>
+        <Card title="Players" className="mt-4 md:mt-0">
+          <Table
+            columns={columns}
+            dataSource={data.players}
+            pagination={{ pageSize: 10 }}
+          />
+        </Card>
+      </div>
     </div>
   );
 };
