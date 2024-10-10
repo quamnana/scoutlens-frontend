@@ -15,7 +15,7 @@ import {
 const BarGraph = ({ title, data, xAxisKey, dataKeys, colors }) => {
   return (
     <Card title={title} className="mt-4">
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={550}>
         <BarChart data={data}>
           <XAxis dataKey={xAxisKey} />
           <YAxis />

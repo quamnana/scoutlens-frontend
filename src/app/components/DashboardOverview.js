@@ -17,6 +17,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import BarGraph from "./BarGraph";
+import PlayerMap from "./PlayerMap";
 
 const dummyData = {
   totalPlayers: 500,
@@ -36,6 +37,9 @@ const dummyData = {
     { name: "Germany", players: 75 },
     { name: "England", players: 80 },
     { name: "France", players: 60 },
+    { name: "Italy", players: 50 },
+    { name: "Brazil", players: 90 },
+    { name: "Argentina", players: 70 },
   ],
   leaguesData: [
     { league: "La Liga", players: 150, teams: 20 },
@@ -150,29 +154,24 @@ const DashboardOverview = () => {
           dataKeys={["players", "teams"]}
           colors={["#8884d8", "#82ca9d"]}
         />
-        <Card title="Players" className="mt-4">
+        {/* <Card title="Players" className="mt-4">
           <Table
             columns={columns}
             dataSource={data.players}
             pagination={{ pageSize: 5 }}
           />
+        </Card> */}
+        <Card title="Number of Players in Each Country" className="mt-4">
+          <PlayerMap data={data.countriesData} />
         </Card>
       </div>
 
-      <Card title="Player Distribution by Country" className="mt-4">
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={data.countriesData}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Area
-              type="monotone"
-              dataKey="players"
-              stroke="#8884d8"
-              fill="#8884d8"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      <Card title="Players" className="mt-4">
+        <Table
+          columns={columns}
+          dataSource={data.players}
+          pagination={{ pageSize: 5 }}
+        />
       </Card>
     </div>
   );
