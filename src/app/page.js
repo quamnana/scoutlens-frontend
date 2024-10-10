@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import DashboardOverview from "./components/DashboardOverview";
+import TopNavigation from "./components/TopNavigation";
 
 const Pages = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -22,9 +23,12 @@ const Pages = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       <Sidebar setActivePage={setActivePage} />
-      <div className="flex-1 bg-gray-100">{renderPage()}</div>
+      <div className="flex-1 flex flex-col bg-gray-100">
+        <TopNavigation />
+        <div className="p-4 flex-1 overflow-y-auto">{renderPage()}</div>
+      </div>
     </div>
   );
 };

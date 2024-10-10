@@ -1,15 +1,40 @@
 // src/app/components/Sidebar.js
-import { Menu } from "antd";
+"use client";
+
+import { Menu, Layout, Button } from "antd";
 import {
   DashboardOutlined,
   TeamOutlined,
   GlobalOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
+import { useState } from "react";
+
+const { Sider } = Layout;
 
 const Sidebar = ({ setActivePage }) => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
-    <div className="w-64 h-screen bg-gray-900 text-white">
-      <div className="p-4 text-xl font-bold">ScoutLens</div>
+    <Sider
+      collapsible
+      collapsed={collapsed}
+      onCollapse={toggleCollapse}
+      className="bg-gray-900"
+    >
+      <div className="p-4 text-xl font-bold text-white flex items-center justify-between">
+        {!collapsed && <span>ScoutLens</span>}
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={toggleCollapse}
+        />
+      </div>
       <Menu
         theme="dark"
         mode="inline"
@@ -38,7 +63,7 @@ const Sidebar = ({ setActivePage }) => {
           Countries
         </Menu.Item>
       </Menu>
-    </div>
+    </Sider>
   );
 };
 
