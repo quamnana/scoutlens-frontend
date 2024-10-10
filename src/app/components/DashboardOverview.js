@@ -16,6 +16,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import BarGraph from "./BarGraph";
 
 const dummyData = {
   totalPlayers: 500,
@@ -35,6 +36,13 @@ const dummyData = {
     { name: "Germany", players: 75 },
     { name: "England", players: 80 },
     { name: "France", players: 60 },
+  ],
+  leaguesData: [
+    { league: "La Liga", players: 150, teams: 20 },
+    { league: "Bundesliga", players: 120, teams: 18 },
+    { league: "Premier League", players: 180, teams: 20 },
+    { league: "Serie A", players: 130, teams: 20 },
+    { league: "Ligue 1", players: 100, teams: 18 },
   ],
 };
 
@@ -134,13 +142,22 @@ const DashboardOverview = () => {
         </Card>
       </div>
 
-      <Card title="Players" className="mt-4">
-        <Table
-          columns={columns}
-          dataSource={data.players}
-          pagination={{ pageSize: 5 }}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <BarGraph
+          title="Number of Players and Teams in Each League"
+          data={data.leaguesData}
+          xAxisKey="league"
+          dataKeys={["players", "teams"]}
+          colors={["#8884d8", "#82ca9d"]}
         />
-      </Card>
+        <Card title="Players" className="mt-4">
+          <Table
+            columns={columns}
+            dataSource={data.players}
+            pagination={{ pageSize: 5 }}
+          />
+        </Card>
+      </div>
 
       <Card title="Player Distribution by Country" className="mt-4">
         <ResponsiveContainer width="100%" height={300}>
