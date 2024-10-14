@@ -7,69 +7,16 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import { useState } from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useEffect, useState } from "react";
 import BarGraph from "./BarGraph";
 import PlayerMap from "./PlayerMap";
 import TopStats from "./TopStats";
-
-const dummyData = {
-  totalPlayers: 500,
-  totalLeagues: 20,
-  totalCountries: 15,
-  players: Array.from({ length: 20 }, (_, i) => ({
-    key: i,
-    name: `Player ${i + 1}`,
-    nation: "England",
-    position: "Midfielder",
-    team: `Team ${i + 1}`,
-    league: "Premier League",
-    age: 20 + i,
-  })),
-  countriesData: [
-    { name: "Spain", players: 100 },
-    { name: "Germany", players: 75 },
-    { name: "England", players: 80 },
-    { name: "France", players: 60 },
-    { name: "Italy", players: 50 },
-    { name: "Brazil", players: 90 },
-    { name: "Argentina", players: 70 },
-  ],
-  leaguesData: [
-    { league: "La Liga", players: 150, teams: 20 },
-    { league: "Bundesliga", players: 120, teams: 18 },
-    { league: "Premier League", players: 180, teams: 20 },
-    { league: "Serie A", players: 130, teams: 20 },
-    { league: "Ligue 1", players: 100, teams: 18 },
-  ],
-  topGoalscorers: [
-    { name: "Lionel Messi", team: "Inter Miami", stats: 40 },
-    { name: "Cristiano Ronaldo", team: "Al Nassr", stats: 35 },
-    { name: "Erling Haaland", team: "Manchester City", stats: 33 },
-  ],
-  defensiveMonsters: [
-    { name: "Virgil van Dijk", team: "Liverpool", stats: 100 },
-    { name: "Ruben Dias", team: "Manchester City", stats: 95 },
-    { name: "Kalidou Koulibaly", team: "Al Hilal", stats: 93 },
-  ],
-  assistLeaders: [
-    { name: "Kevin De Bruyne", team: "Manchester City", stats: 20 },
-    { name: "Bruno Fernandes", team: "Manchester United", stats: 18 },
-    { name: "Lionel Messi", team: "Inter Miami", stats: 17 },
-  ],
-  saveMonsters: [
-    { name: "Thibaut Courtois", team: "Real Madrid", stats: 90 },
-    { name: "Alisson Becker", team: "Liverpool", stats: 88 },
-    { name: "Ederson Moraes", team: "Manchester City", stats: 85 },
-  ],
-};
+import PlayersPreviewTable from "./PlayersPreviewTable";
+import { getPlayersStatsOverview, getPlayersStatsPreview } from "../utils/api";
+import {
+  getTeamAndPlayersTotals,
+  convertCountryNames,
+} from "../utils/app_utils";
 
 const statisticStyles = {
   //   color: "#3f8600",
@@ -78,57 +25,42 @@ const statisticStyles = {
 };
 
 const DashboardOverview = () => {
-  const [data] = useState(dummyData);
+  const [overviewData, setOverviewData] = useState(null);
+  const [playersStatsPreview, setPlayersStatsPreview] = useState(null);
 
-  const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Nation",
-      dataIndex: "nation",
-      key: "nation",
-    },
-    {
-      title: "Position",
-      dataIndex: "position",
-      key: "position",
-      render: (_, { position }) => {
-        let color;
-        if (position === "Goalkepper") {
-          color = "orange";
-        } else if (position === "Defender") {
-          color = "lime";
-        } else if (position === "Midfielder") {
-          color = "gold";
-        } else {
-          color = "volcano";
-        }
-        return (
-          <Tag color={color} key={position}>
-            {position.toUpperCase()}
-          </Tag>
-        );
-      },
-    },
-    {
-      title: "Team",
-      dataIndex: "team",
-      key: "team",
-    },
-    {
-      title: "League",
-      dataIndex: "league",
-      key: "league",
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-    },
-  ];
+  async function fetchPlayersStatsPreview() {
+    try {
+      const data = await getPlayersStatsPreview();
+      setPlayersStatsPreview(data.content);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fetchPlayersStatsOverview() {
+    try {
+      const data = await getPlayersStatsOverview();
+      const totals = await getTeamAndPlayersTotals(data?.leaguesData);
+      data["totalPlayers"] = totals?.totalPlayers;
+      data["totalTeams"] = totals?.totalTeams;
+
+      const convertedCountriesData = await convertCountryNames(
+        data?.countriesData
+      );
+      data["countriesData"] = convertedCountriesData;
+      console.log(data);
+
+      // console.log(data);
+      setOverviewData(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayersStatsOverview();
+    fetchPlayersStatsPreview();
+  }, []);
 
   return (
     <div className="p-4 space-y-4">
@@ -136,7 +68,7 @@ const DashboardOverview = () => {
         <Card>
           <Statistic
             title="Players"
-            value={data.totalPlayers}
+            value={overviewData?.totalPlayers}
             prefix={<UserOutlined />}
             valueStyle={statisticStyles}
           />
@@ -144,7 +76,7 @@ const DashboardOverview = () => {
         <Card>
           <Statistic
             title="Leagues"
-            value={data.totalLeagues}
+            value={overviewData?.leaguesData?.length}
             prefix={<TrophyOutlined />}
             valueStyle={statisticStyles}
           />
@@ -152,7 +84,7 @@ const DashboardOverview = () => {
         <Card>
           <Statistic
             title="Countries"
-            value={data.totalCountries}
+            value={overviewData?.countriesData?.length}
             prefix={<GlobalOutlined />}
             valueStyle={statisticStyles}
           />
@@ -160,7 +92,7 @@ const DashboardOverview = () => {
         <Card>
           <Statistic
             title="Teams"
-            value={data.totalCountries}
+            value={overviewData?.totalTeams}
             prefix={<TeamOutlined />}
             valueStyle={statisticStyles}
           />
@@ -170,30 +102,29 @@ const DashboardOverview = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <BarGraph
           title="Number of Players and Teams in Each League"
-          data={data.leaguesData}
+          data={overviewData?.leaguesData}
           xAxisKey="league"
           dataKeys={["players", "teams"]}
-          colors={["#8884d8", "#82ca9d"]}
+          colors={["#030852", "#597ef7"]}
         />
         <Card title="Number of Players in Each Country" className="mt-4">
-          <PlayerMap data={data.countriesData} />
+          {overviewData?.countriesData && (
+            <PlayerMap data={overviewData?.countriesData} />
+          )}
         </Card>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <TopStats title="Top Goalscorers" data={data.topGoalscorers} />
-          <TopStats title="Defensive Monsters" data={data.defensiveMonsters} />
-          <TopStats title="Assist Leaders" data={data.assistLeaders} />
-          <TopStats title="Save Monsters" data={data.saveMonsters} />
-        </div>
-        <Card title="Players" className="mt-4 md:mt-0">
-          <Table
-            columns={columns}
-            dataSource={data.players}
-            pagination={{ pageSize: 10 }}
+          <TopStats
+            title="Top Goalscorers"
+            data={overviewData?.topGoalScorers}
           />
-        </Card>
+          <TopStats title="Assists Leaders" data={overviewData?.topAssists} />
+          <TopStats title="Top Passers" data={overviewData?.topPassers} />
+          <TopStats title="Top Tacklers" data={overviewData?.topTacklers} />
+        </div>
+        <PlayersPreviewTable data={playersStatsPreview} />
       </div>
     </div>
   );

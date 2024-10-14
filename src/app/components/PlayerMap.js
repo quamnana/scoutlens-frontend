@@ -11,9 +11,10 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const PlayerMap = ({ data }) => {
   // Define a scale for coloring countries based on the number of players
+  console.log({ data });
   const colorScale = scaleLinear()
-    .domain([0, Math.max(...data.map((d) => d.players))])
-    .range(["#e0f3f3", "#084081"]);
+    .domain([0, Math.max(...data?.map((d) => d?.players))])
+    .range(["#030852", "#597ef7"]);
 
   return (
     <div className="mt-4">
@@ -22,7 +23,7 @@ const PlayerMap = ({ data }) => {
           {({ geographies }) =>
             geographies.map((geo) => {
               const countryData = data.find(
-                (country) => country.name === geo.properties.name
+                (country) => country.nation === geo.properties.name
               );
 
               const playerCount = countryData ? countryData.players : 0;
