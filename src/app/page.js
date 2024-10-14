@@ -5,6 +5,7 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import DashboardOverview from "./components/DashboardOverview";
 import TopNavigation from "./components/TopNavigation";
+import PlayersPage from "./components/PlayersPage";
 
 const Pages = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -14,7 +15,7 @@ const Pages = () => {
       case "dashboard":
         return <DashboardOverview />;
       case "players":
-        return <div className="p-4">Players Page (Coming Soon)</div>; // Placeholder
+        return <PlayersPage />; // Placeholder
       case "countries":
         return <div className="p-4">Countries Page (Coming Soon)</div>; // Placeholder
       default:
