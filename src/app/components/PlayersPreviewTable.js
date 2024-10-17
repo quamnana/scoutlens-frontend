@@ -1,4 +1,5 @@
 import { Card, Table, Tag } from "antd";
+import { getPositionTagColor } from "../utils/app_utils";
 
 const PlayersPreviewTable = ({ data, pageSize = 10 }) => {
   const columns = [
@@ -17,24 +18,10 @@ const PlayersPreviewTable = ({ data, pageSize = 10 }) => {
       dataIndex: "position",
       key: "position",
       render: (_, { position }) => {
-        let color;
-        let _position;
-        if (position === "GK") {
-          color = "orange";
-          _position = "Goalkeeper";
-        } else if (["DF"].includes(position)) {
-          color = "lime";
-          _position = "Defender";
-        } else if (["MF", "MFDF", "MFFW", "DFMF"]) {
-          color = "gold";
-          _position = "Midfielder";
-        } else {
-          color = "volcano";
-          _position = "Forward";
-        }
+        const tagInfo = getPositionTagColor(position);
         return (
-          <Tag color={color} key={position}>
-            {_position.toUpperCase()}
+          <Tag color={tagInfo.color} key={position}>
+            {tagInfo._position.toUpperCase()}
           </Tag>
         );
       },

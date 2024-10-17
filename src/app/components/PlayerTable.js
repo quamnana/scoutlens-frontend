@@ -1,16 +1,20 @@
-// src/app/components/PlayerTable.js
-import React, { useState } from "react";
-import { Table } from "antd";
+import React from "react";
+import { Table, Tag } from "antd";
+import { getPositionTagColor } from "../utils/app_utils";
 
-const PlayerTable = ({ data, onRowClick }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(20); // 20 players per page
-
+const PlayerTable = ({
+  data,
+  totalElements,
+  currentPage,
+  pageSize,
+  onRowClick,
+  onPageChange,
+}) => {
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "fullName",
+      key: "fullName",
     },
     {
       title: "Team",
@@ -28,6 +32,14 @@ const PlayerTable = ({ data, onRowClick }) => {
       title: "Position",
       dataIndex: "position",
       key: "position",
+      render: (_, { position }) => {
+        const tagInfo = getPositionTagColor(position);
+        return (
+          <Tag color={tagInfo.color} key={position}>
+            {tagInfo._position.toUpperCase()}
+          </Tag>
+        );
+      },
       filters: [
         { text: "Forward", value: "Forward" },
         { text: "Midfielder", value: "Midfielder" },
@@ -50,7 +62,8 @@ const PlayerTable = ({ data, onRowClick }) => {
       pagination={{
         current: currentPage,
         pageSize: pageSize,
-        onChange: (page) => setCurrentPage(page),
+        total: totalElements,
+        onChange: (page, pageSize) => onPageChange(page, pageSize),
       }}
       onRow={(record) => ({
         onClick: () => onRowClick(record),

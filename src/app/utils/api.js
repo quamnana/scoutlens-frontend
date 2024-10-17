@@ -17,9 +17,9 @@ export async function getPlayersStatsOverview() {
     console.log(error?.message);
   }
 }
-export async function getPlayersStatsPreview() {
+export async function getPlayersStats(params) {
   try {
-    const response = await axiosInstance.get("players_stats");
+    const response = await axiosInstance.get("players_stats", { params });
     return response.data;
   } catch (error) {
     console.log(error?.message);

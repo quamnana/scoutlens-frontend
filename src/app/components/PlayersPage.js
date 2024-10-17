@@ -1,41 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PlayerTable from "../components/PlayerTable";
 import PlayerDrawer from "../components/PlayerDrawer";
 import PlayerFilters from "../components/PlayerFilters";
 import { Button, Space } from "antd";
 import { CSVLink } from "react-csv";
 import { CloudDownloadOutlined, AlignCenterOutlined } from "@ant-design/icons";
+import { getPlayersStats } from "../utils/api";
 
 const PlayersPage = () => {
-  // Sample data for players
-  const playersData = [
-    {
-      key: "1",
-      name: "Lionel Messi",
-      team: "Inter Miami",
-      position: "Forward",
-      age: 35,
-      goals: 30,
-      assists: 10,
-      matchesPlayed: 40,
-    },
-    {
-      key: "2",
-      name: "Cristiano Ronaldo",
-      team: "Al Nassr",
-      position: "Forward",
-      age: 36,
-      goals: 40,
-      assists: 15,
-      matchesPlayed: 50,
-    },
-    // Add more player data...
-  ];
-
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [filterDrawerVisible, setFilterDrawerVisible] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [filteredData, setFilteredData] = useState(playersData);
+  const [filteredData, setFilteredData] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10); // Define the number of players per page
 
   // Open player detail drawer
   const handleRowClick = (player) => {
@@ -58,8 +37,30 @@ const PlayersPage = () => {
 
   // Reset filters and display the original data
   const resetFilters = () => {
-    setFilteredData(playersData);
+    fetchPlayersStats(1); // Reset to the first page and re-fetch all data
   };
+
+  // Fetch player stats from API, including pagination
+  async function fetchPlayersStats(page = 1) {
+    try {
+      const params = { page: page - 1, size: pageSize };
+      const data = await getPlayersStats(params); // Pass the current page and pageSize to the API
+      setFilteredData(data.content); // Assuming API returns player data in `content`
+      setTotalElements(data.totalElements); // Assuming API returns total player count in `totalElements`
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Handle page change and fetch the new page data
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchPlayersStats(page);
+  };
+
+  useEffect(() => {
+    fetchPlayersStats(currentPage); // Fetch data for the initial page load
+  }, [currentPage]);
 
   return (
     <div>
@@ -78,8 +79,15 @@ const PlayersPage = () => {
         </CSVLink>
       </Space>
 
-      {/* Player Table */}
-      <PlayerTable data={filteredData} onRowClick={handleRowClick} />
+      {/* Player Table with pagination */}
+      <PlayerTable
+        data={filteredData}
+        totalElements={totalElements}
+        currentPage={currentPage}
+        pageSize={pageSize}
+        onRowClick={handleRowClick}
+        onPageChange={handlePageChange} // Handle pagination changes
+      />
 
       {/* Player Drawer */}
       <PlayerDrawer

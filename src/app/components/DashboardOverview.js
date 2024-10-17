@@ -12,7 +12,7 @@ import BarGraph from "./BarGraph";
 import PlayerMap from "./PlayerMap";
 import TopStats from "./TopStats";
 import PlayersPreviewTable from "./PlayersPreviewTable";
-import { getPlayersStatsOverview, getPlayersStatsPreview } from "../utils/api";
+import { getPlayersStatsOverview, getPlayersStats } from "../utils/api";
 import {
   getTeamAndPlayersTotals,
   convertCountryNames,
@@ -30,7 +30,7 @@ const DashboardOverview = () => {
 
   async function fetchPlayersStatsPreview() {
     try {
-      const data = await getPlayersStatsPreview();
+      const data = await getPlayersStats();
       setPlayersStatsPreview(data.content);
     } catch (error) {
       console.log(error);
