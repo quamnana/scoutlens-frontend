@@ -25,3 +25,14 @@ export async function getPlayersStats(params) {
     console.log(error?.message);
   }
 }
+
+export async function getPlayersStatsFilterParams(params) {
+  try {
+    const response = await axiosInstance.get("players_stats/filterParams", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error?.message);
+  }
+}

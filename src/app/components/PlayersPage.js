@@ -14,7 +14,7 @@ const PlayersPage = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10); // Define the number of players per page
+  const [pageSize] = useState(15); // Define the number of players per page
 
   // Open player detail drawer
   const handleRowClick = (player) => {
@@ -38,6 +38,7 @@ const PlayersPage = () => {
   // Reset filters and display the original data
   const resetFilters = () => {
     fetchPlayersStats(1); // Reset to the first page and re-fetch all data
+    setCurrentPage(0);
   };
 
   // Fetch player stats from API, including pagination

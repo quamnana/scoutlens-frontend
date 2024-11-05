@@ -16,16 +16,23 @@ export async function convertCountryNames(data) {
   return updatedData;
 }
 
+export function convertCountryName(countryCode) {
+  // Register the locale for the "en" language
+  countries.registerLocale(require("i18n-iso-countries/langs/en.json"));
+  const countryName = countries.getName(countryCode, "en");
+  return countryName || countryCode;
+}
+
 export function getPositionTagColor(position) {
   let color;
   let _position;
-  if (position === "GK") {
+  if (playerPositions["Goalkeeper"].includes(position)) {
     color = "orange";
     _position = "Goalkeeper";
-  } else if (["DF"].includes(position)) {
+  } else if (playerPositions["Defender"].includes(position)) {
     color = "lime";
     _position = "Defender";
-  } else if (["MF", "MFDF", "MFFW", "DFMF"]) {
+  } else if (playerPositions["Midfielder"].includes(position)) {
     color = "gold";
     _position = "Midfielder";
   } else {
@@ -35,3 +42,10 @@ export function getPositionTagColor(position) {
 
   return { color, _position };
 }
+
+export const playerPositions = {
+  Goalkeeper: ["GK"],
+  Defender: ["DF"],
+  Midfielder: ["MF", "MFDF", "MFFW", "DFMF"],
+  Forward: ["FW", "FWMF"],
+};
