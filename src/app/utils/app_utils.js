@@ -28,24 +28,29 @@ export function getPositionTagColor(position) {
   let _position;
   if (playerPositions["Goalkeeper"].includes(position)) {
     color = "orange";
-    _position = "Goalkeeper";
+    _position = position;
   } else if (playerPositions["Defender"].includes(position)) {
     color = "lime";
-    _position = "Defender";
+    _position = position;
   } else if (playerPositions["Midfielder"].includes(position)) {
     color = "gold";
-    _position = "Midfielder";
+    _position = position;
   } else {
     color = "volcano";
-    _position = "Forward";
+    _position = position;
   }
 
   return { color, _position };
 }
 
 export const playerPositions = {
-  Goalkeeper: ["GK"],
-  Defender: ["DF"],
-  Midfielder: ["MF", "MFDF", "MFFW", "DFMF"],
-  Forward: ["FW", "FWMF"],
+  Goalkeeper: ["Goalkeeper"],
+  Defender: ["Defender", "Fullback"],
+  Midfielder: [
+    "Midfielder",
+    "Defensive Midfielder",
+    "Wide Midfielder",
+    "Attacking Midfielder",
+  ],
+  Forward: ["Attacker", "Winger"],
 };

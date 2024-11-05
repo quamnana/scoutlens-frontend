@@ -12,7 +12,7 @@ import BarGraph from "./BarGraph";
 import PlayerMap from "./PlayerMap";
 import TopStats from "./TopStats";
 import PlayersPreviewTable from "./PlayersPreviewTable";
-import { getPlayersStatsOverview, getPlayersStats } from "../utils/api";
+import { getPlayersOverview, getPlayersStats } from "../api/playersEndpoints";
 import {
   getTeamAndPlayersTotals,
   convertCountryNames,
@@ -39,15 +39,16 @@ const DashboardOverview = () => {
 
   async function fetchPlayersStatsOverview() {
     try {
-      const data = await getPlayersStatsOverview();
+      const data = await getPlayersOverview();
+      console.log(data);
       const totals = await getTeamAndPlayersTotals(data?.leaguesData);
       data["totalPlayers"] = totals?.totalPlayers;
       data["totalTeams"] = totals?.totalTeams;
 
-      const convertedCountriesData = await convertCountryNames(
-        data?.countriesData
-      );
-      data["countriesData"] = convertedCountriesData;
+      // const convertedCountriesData = await convertCountryNames(
+      //   data?.countriesData
+      // );
+      // data["countriesData"] = convertedCountriesData;
       console.log(data);
 
       // console.log(data);

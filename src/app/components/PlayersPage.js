@@ -5,7 +5,7 @@ import PlayerFilters from "../components/PlayerFilters";
 import { Button, Space } from "antd";
 import { CSVLink } from "react-csv";
 import { CloudDownloadOutlined, AlignCenterOutlined } from "@ant-design/icons";
-import { getPlayersStats } from "../utils/api";
+import { getPlayersStats } from "../api/playersEndpoints";
 
 const PlayersPage = () => {
   const [drawerVisible, setDrawerVisible] = useState(false);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Select, Slider, Button, Drawer, Space, InputNumber } from "antd";
 import { SliderMarks } from "antd/lib/slider";
-import { getPlayersStatsFilterParams } from "../utils/api";
+import { getPlayersStatsFilterParams } from "../api/playersEndpoints";
 import { convertCountryName, playerPositions } from "../utils/app_utils";
 
 const { Option } = Select;

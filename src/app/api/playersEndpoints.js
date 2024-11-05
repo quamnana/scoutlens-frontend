@@ -9,9 +9,9 @@ const axiosInstance = axios.create({
 
 // Fetch data from the server
 
-export async function getPlayersStatsOverview() {
+export async function getPlayersOverview() {
   try {
-    const response = await axiosInstance.get("players_stats/overview");
+    const response = await axiosInstance.get("players/overview");
     return response.data;
   } catch (error) {
     console.log(error?.message);
@@ -19,7 +19,7 @@ export async function getPlayersStatsOverview() {
 }
 export async function getPlayersStats(params) {
   try {
-    const response = await axiosInstance.get("players_stats", { params });
+    const response = await axiosInstance.get("players", { params });
     return response.data;
   } catch (error) {
     console.log(error?.message);
