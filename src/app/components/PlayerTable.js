@@ -5,6 +5,7 @@ import { getPositionTagColor } from "../utils/app_utils";
 const PlayerTable = ({
   data,
   totalElements,
+  sortedField,
   currentPage,
   pageSize,
   onRowClick,
@@ -20,12 +21,12 @@ const PlayerTable = ({
       title: "Team",
       dataIndex: "team",
       key: "team",
-      filters: [
-        { text: "Inter Miami", value: "Inter Miami" },
-        { text: "Al Nassr", value: "Al Nassr" },
-        { text: "Manchester City", value: "Manchester City" },
-        { text: "Liverpool", value: "Liverpool" },
-      ],
+      // filters: [
+      //   { text: "Inter Miami", value: "Inter Miami" },
+      //   { text: "Al Nassr", value: "Al Nassr" },
+      //   { text: "Manchester City", value: "Manchester City" },
+      //   { text: "Liverpool", value: "Liverpool" },
+      // ],
       onFilter: (value, record) => record.team.indexOf(value) === 0,
     },
     {
@@ -40,18 +41,18 @@ const PlayerTable = ({
           </Tag>
         );
       },
-      filters: [
-        { text: "Forward", value: "Forward" },
-        { text: "Midfielder", value: "Midfielder" },
-        { text: "Defender", value: "Defender" },
-      ],
+      // filters: [
+      //   { text: "Forward", value: "Forward" },
+      //   { text: "Midfielder", value: "Midfielder" },
+      //   { text: "Defender", value: "Defender" },
+      // ],
       onFilter: (value, record) => record.position.indexOf(value) === 0,
     },
     {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      sorter: (a, b) => a.age - b.age,
+      title: sortedField ? sortedField : "age",
+      dataIndex: sortedField ? sortedField : "age",
+      key: sortedField ? sortedField : "age",
+      sorter: (a, b) => a[sortedField] - b[sortedField],
     },
   ];
 

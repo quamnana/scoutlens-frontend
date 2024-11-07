@@ -28,7 +28,7 @@ export async function getPlayersStats(params) {
 
 export async function getPlayersStatsFilterParams(params) {
   try {
-    const response = await axiosInstance.get("players_stats/filterParams", {
+    const response = await axiosInstance.get("players/", {
       params,
     });
     return response.data;

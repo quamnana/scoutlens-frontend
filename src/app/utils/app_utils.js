@@ -1,5 +1,10 @@
 const countries = require("i18n-iso-countries");
 
+export function prependElement(array, element) {
+  array.unshift(element);
+  return array;
+}
+
 export async function getTeamAndPlayersTotals(data) {
   const totalTeams = data.reduce((sum, d) => sum + d.teams, 0);
   const totalPlayers = data.reduce((sum, d) => sum + d.players, 0);

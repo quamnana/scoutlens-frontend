@@ -2,7 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Select, Slider, Button, Drawer, Space, InputNumber } from "antd";
 import { SliderMarks } from "antd/lib/slider";
 import { getPlayersStatsFilterParams } from "../api/playersEndpoints";
-import { convertCountryName, playerPositions } from "../utils/app_utils";
+import {
+  convertCountryName,
+  playerPositions,
+  prependElement,
+} from "../utils/app_utils";
+import { getCategories } from "../api/categoryEndpoints";
+import { DATA_FIELDS } from "../utils/data_fields";
 
 const { Option } = Select;
 
@@ -11,42 +17,64 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
   const [goals, setGoals] = useState(null);
   const [assists, setAssists] = useState(null);
   const [matchesPlayed, setMatchesPlayed] = useState(null);
-  const [position, setPosition] = useState(null);
-  const [team, setTeam] = useState(null);
-  const [league, setLeague] = useState("Premier League");
-  const [nation, setNation] = useState(null);
+  const [position, setPosition] = useState("Any Position");
+  const [team, setTeam] = useState("Any Team");
+  const [league, setLeague] = useState("Any League");
+  const [nation, setNation] = useState("Any Nationality");
+  const [field, setField] = useState("age");
+  const [positions, setPositions] = useState(null);
   const [leagues, setLeagues] = useState([]);
   const [teams, setTeams] = useState([]);
   const [nations, setNations] = useState([]);
 
   const handleApplyFilters = () => {
     applyFilters({
-      ageRange,
-      goals,
-      assists,
-      matchesPlayed,
-      position,
-      team,
-      league,
-      nation,
+      // ageRange,
+      position: position === "Any Position" ? null : position,
+      team: team === "Any Team" ? null : team,
+      league: league === "Any League" ? null : league,
+      nation: nation === "Any Nationality" ? null : nation,
+      sortField: field,
     });
+
     onClose();
   };
 
-  async function fetchLeagues(league = "distinct") {
+  const handleResetFilters = () => {
+    setPosition("Any Position");
+    setTeam("Any Team");
+    setLeague("Any League");
+    setNation("Any Nationality");
+    setField("age");
+    resetFilters();
+
+    // onClose();
+  };
+
+  async function fetchPositions() {
     try {
-      const params = { league };
-      const data = await getPlayersStatsFilterParams(params);
+      let data = await getCategories("position");
+      data = prependElement(data, "Any Position");
+      setPositions(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function fetchLeagues() {
+    try {
+      let data = await getCategories("league");
+      data = prependElement(data, "Any League");
       setLeagues(data);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async function fetchNations(nation = "distinct") {
+  async function fetchNations() {
     try {
-      const params = { nation };
-      const data = await getPlayersStatsFilterParams(params);
+      let data = await getCategories("nation");
+      data = prependElement(data, "Any Nationality");
       setNations(data);
     } catch (error) {
       console.log(error);
@@ -56,7 +84,8 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
   async function fetchTeams(league) {
     try {
       const params = { league };
-      const data = await getPlayersStatsFilterParams(params);
+      let data = await await getCategories("teams", params);
+      data = prependElement(data, "Any Team");
       setTeams(data);
       setLeague(league);
     } catch (error) {
@@ -65,6 +94,7 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
   }
 
   useEffect(() => {
+    fetchPositions();
     fetchLeagues();
     fetchNations();
     fetchTeams(league); // Fetch teams for the first league by default
@@ -78,33 +108,33 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
       width={400}
       footer={
         <Space>
-          <Button onClick={resetFilters}>Reset</Button>
+          <Button onClick={handleResetFilters}>Reset</Button>
           <Button type="primary" onClick={handleApplyFilters}>
             Apply Filters
           </Button>
         </Space>
       }
     >
-      {/* Filter by Position */}
       <h4>Position</h4>
       <Select
         style={{ width: "100%", marginBottom: 16 }}
         placeholder="Select positions"
-        onChange={(value) => setPosition(playerPositions[value][0])}
+        value={position}
+        onChange={(value) => setPosition(value)}
       >
-        <Option value="Forward">Forward</Option>
-        <Option value="Midfielder">Midfielder</Option>
-        <Option value="Defender">Defender</Option>
-        <Option value="Goalkeeper">Goalkeeper</Option>
+        {positions?.map((_position) => (
+          <Option key={_position} value={_position}>
+            {_position}
+          </Option>
+        ))}
       </Select>
 
-      {/* Filter by League */}
       <h4>League</h4>
       <Select
         style={{ width: "100%", marginBottom: 16 }}
         placeholder="Select a league"
+        value={league}
         onChange={async (value) => await fetchTeams(value)}
-        defaultValue="Premier League"
       >
         {leagues?.map((_league) => (
           <Option key={_league} value={_league}>
@@ -113,12 +143,11 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
         ))}
       </Select>
 
-      {/* Filter by Team */}
       <h4>Team</h4>
       <Select
-        // mode="multiple"
         style={{ width: "100%", marginBottom: 16 }}
         placeholder="Select teams"
+        value={team}
         onChange={(value) => setTeam(value)}
       >
         {teams?.map((_team) => (
@@ -128,11 +157,11 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
         ))}
       </Select>
 
-      {/* Filter by Nation */}
       <h4>Nation</h4>
       <Select
         style={{ width: "100%", marginBottom: 16 }}
-        placeholder="Select a nation"
+        placeholder="Select a nationality"
+        value={nation}
         onChange={(value) => setNation(value)}
       >
         {nations?.map((_nation) => (
@@ -142,51 +171,19 @@ const PlayerFilters = ({ visible, onClose, applyFilters, resetFilters }) => {
         ))}
       </Select>
 
-      {/* Filter by Age */}
-      <h4>Age Range</h4>
-      <Slider
-        range
-        min={18}
-        max={40}
-        value={ageRange}
-        onChange={(value) => setAgeRange(value)}
-        marks={{ 18: "18", 40: "40" }}
-        style={{ marginBottom: 16 }}
-      />
-
-      {/* Filter by Goals Scored */}
-      <h4>Goals Scored</h4>
-      <Slider
-        min={0}
-        max={50}
-        value={goals}
-        onChange={(value) => setGoals(value)}
-        marks={{ 0: "0", 50: "50" }}
-        style={{ marginBottom: 16 }}
-      />
-
-      {/* Filter by Assists */}
-      <h4>Assists</h4>
-      <Slider
-        min={0}
-        max={50}
-        value={assists}
-        onChange={(value) => setAssists(value)}
-        marks={{ 0: "0", 50: "50" }}
-        style={{ marginBottom: 16 }}
-      />
-
-      {/* Filter by Matches Played */}
-      <h4>Matches Played</h4>
-      <Slider
-        range
-        min={0}
-        max={50}
-        value={matchesPlayed}
-        onChange={(value) => setMatchesPlayed(value)}
-        marks={{ 0: "0", 50: "50" }}
-        style={{ marginBottom: 16 }}
-      />
+      <h4>Sort By</h4>
+      <Select
+        style={{ width: "100%", marginBottom: 16 }}
+        placeholder="Select a stat"
+        value={field}
+        onChange={(value) => setField(value)}
+      >
+        {DATA_FIELDS?.map((field) => (
+          <Option key={field} value={field}>
+            {field}
+          </Option>
+        ))}
+      </Select>
     </Drawer>
   );
 };

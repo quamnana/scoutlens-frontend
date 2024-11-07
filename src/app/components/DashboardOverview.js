@@ -31,7 +31,7 @@ const DashboardOverview = () => {
   async function fetchPlayersStatsPreview() {
     try {
       const data = await getPlayersStats();
-      setPlayersStatsPreview(data.content);
+      setPlayersStatsPreview(data.players);
     } catch (error) {
       console.log(error);
     }
